@@ -1,0 +1,25 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  /*color: #00B7FF;*/
+}
+
+.container{
+	width:auto;
+	max-width: 680px;
+	padding : 0px 15px;
+
+}
+
+.footer {
+  position: absolute;
+  bottom: 0px;  
+  height: 40px;
+  background-color: #CCFFCC;
+  clear:both;
+  padding-top:10px;
+  margin-top: -150px; /* negative value of footer height */
+} 
