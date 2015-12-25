@@ -1,9 +1,11 @@
-### Readme #
+
 
 **Author : Anqi Tong**
 
 
 ----------
+
+This app is implemented by following this tutorial : https://thinkster.io/mean-stack-tutorial
 
 Make sure you have MongoDB installed on your machine.
 
