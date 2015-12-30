@@ -22,18 +22,32 @@
 
   <body ng-app="myApp">
   
-    <div class="row">           
-          <ui-view></ui-view>                   
-        <footer class="footer">
-          <div class="container">Author : Anqi Tong</div>
-        </footer>                           
+    <div class="row">  
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#">Characters of Asmundr</a>
+            </div>
+            <div>
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="#/home">Home</a></li>
+                <li><a href="#/comments">All comments</a></li>                                
+                <li><a href="#/about">About</a></li>                           
+              </ul>
+            </div>
+          </div>
+        </nav>
+        </div>
+    <div class="page-wrap">
+      <ui-view></ui-view>       
     </div>
-
+    
+    
     <script type="text/ng-template" id="/home.html">     
       <div class="col-md-9 col-md-offset-3">
         <div class="page-header">
           <h1>Characters of Asmundr</h1>
-          <a href="http://asmundr-comic.thewebcomic.com/archive/">Tribute to the webcomic Asmundr</a>
+          <a href="http://asmundr-comic.thewebcomic.com/archive/">Tribute to the webcomic Asmundr</a>          
         </div>
         <div ng-repeat="character in characters">         
           <span style="font-size:15px; margin-left:10px;">            
@@ -56,6 +70,7 @@
       </div>
       <div class="col-md-4 col-md-offset-3">
         <form ng-submit="addCharacter()" style="margin-top:30px;margin-left:10px;">
+
            <h3>Add a new character</h3>
 
            <div class="form-group">
@@ -83,7 +98,7 @@
              ng-model="age"></input>
            </div>
            <button type="submit" class="btn btn-primary">Post</button>
-        </form>
+        </form>        
       </div>
     </script>
 
@@ -94,15 +109,21 @@
               <b>Breed :</b> {{character.breed}} -         
               <b>Gender :</b> {{character.gender}} -         
               <b>Age :</b> {{character.age}}
-        </span>
-      </div>
+        </span>         
+      </div>      
 
-      <div ng-repeat="comment in character.comments">
-        <span class="glyphicon glyphicon-thumbs-up"></span>
-        {{comment.author}}
-        <span style="font-size:20px; margin-left:10px;">
-          {{comment.body}}
-        </span>
+      <div ng-repeat="comment in filterComments(character._id)">       
+                
+        <span style="font-size:15px; margin-left:10px;"> 
+          <button type="submit" class="btn btn-link" ng-click="incrementUpvotes(comment)">
+            <span class="glyphicon glyphicon-thumbs-up"></span>
+          </button>            
+          {{comment.upvotes}} &nbsp
+          <b>{{comment.author}}</b> : {{comment.body}}
+        </span> &nbsp &nbsp
+        <span><a href="#/deleteComment/:id" ng-click="deleteComment(comment._id)">
+            Delete</a></span>
+
       </div>
       
       <form ng-submit="addComment()" style="margin-top:30px; margin-left:10px;">
@@ -111,7 +132,7 @@
           <input type="text" class="form-control" placeholder="Comment" ng-model="body"></input>
         </div>
         <button type="submit" class="btn btn-primary">Post</button>
-      </form>
+      </form>      
     </script>
 
     <script type="text/ng-template" id="/delete.html">
@@ -119,8 +140,7 @@
         <h3>
           Character successfully deleted!
         </h3>
-      </div>      
-      <a href="#/home" style="margin-left:30px;">Home</a>
+      </div>           
     </script>
 
     <script type="text/ng-template" id="/edit.html">     
@@ -181,8 +201,115 @@
           </div>
         </div>
 
+      </div>      
+    </script>
+    
+    <script type="text/ng-template" id="/comments.html">     
+        <div class="col-md-9 col-md-offset-3">
+          <div class="page-header">
+            <h1>All comments</h1>           
+          </div>           
+          <div ng-repeat="comment in comments">                     
+            <span style="font-size:15px; margin-left:10px;"> 
+              <button type="submit" class="btn btn-link" ng-click="incrementUpvotes(comment)">
+                <span class="glyphicon glyphicon-thumbs-up"></span>
+              </button>            
+             {{comment.upvotes}} &nbsp
+              <b>{{comment.author}}</b> : {{comment.body}}
+            </span> &nbsp &nbsp
+            <span><a href="#/deleteComment/:id" ng-click="deleteComment(comment._id)">
+              Delete</a></span>
+          </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="/deleteComment.html">
+      <div class="page-header" style="margin-left:30px;">
+        <h3>
+          Comment successfully deleted!
+        </h3>
+      </div>           
+    </script>
+
+    <script type="text/ng-template" id="/about.html">
+      <div class="page-header" style="margin-left:30px;">
+        <h3>
+          About
+        </h3>
+      </div> 
+       
+      <div  class="col-md-9 col-md-offset-3" style="font-size:17px; margin-left:10px;">
+        The author of this webapp is <b>Anqi Tong</b>.
+        </br>
+        </br>
+        This MEAN webapp is a tribute the Asmundr webcomic.
+        </br>
+        It is implemented by following this tutorial :
+        <a href="https://thinkster.io/mean-stack-tutorial">Learn to Build Modern Web Apps with MEAN
+        </a>
+        </br>
+        You can get the source code here : 
+        <a href="https://github.com/anqitong/Node-Angular-Express-MongoDB">link to my Github repository
+        </a>
       </div>
-       <a href="#/home" style="margin-left:30px;">Home</a>
+    </script>
+
+    <script type="text/ng-template" id="/register.html">
+      <div class="page-header">
+        <h1>Register</h1>
+      </div>
+
+      <div ng-show="error" class="alert alert-danger row">
+        <span>{{ error.message }}</span>
+      </div>
+
+      <form ng-submit="register()"
+        style="margin-top:30px;">
+        <h3>Register</h3>
+
+        <div class="form-group">
+          <input type="text"
+          class="form-control"
+          placeholder="Username"
+          ng-model="user.username"></input>
+        </div>
+        <div class="form-group">
+          <input type="password"
+          class="form-control"
+          placeholder="Password"
+          ng-model="user.password"></input>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+    </script>
+
+    <script type="text/ng-template" id="/login.html">
+      <div class="page-header">
+        <h1>Log in</h1>
+      </div>
+
+      <div ng-show="error" class="alert alert-danger row">
+        <span>{{ error.message }}</span>
+      </div>
+
+      <form ng-submit="logIn()"
+        style="margin-top:30px;">
+        <h3>Log In</h3>
+
+        <div class="form-group">
+          <input type="text"
+          class="form-control"
+          placeholder="Username"
+          ng-model="user.username"></input>
+        </div>
+        <div class="form-group">
+          <input type="password"
+          class="form-control"
+          placeholder="Password"
+          ng-model="user.password"></input>
+        </div>
+        <button type="submit" class="btn btn-primary">Log In</button>
+      </form>
     </script>
 
 
